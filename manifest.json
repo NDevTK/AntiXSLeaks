@@ -1,0 +1,14 @@
+{
+  "name": "AntiXSLeaks",
+  "version": "1.0",
+  "description": "Prevent XS Leaks",
+  "permissions": [
+    "webRequestBlocking",
+    "webRequest",
+	"<all_urls>"
+  ],
+  "background": {
+    "scripts":["background.js"]
+  },
+  "manifest_version": 2
+}
