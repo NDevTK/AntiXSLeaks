@@ -1,4 +1,7 @@
 # AntiXSLeaks
-A extension to prevent XS-Leaks
+A extension to prevent XS-Leaks.  
+Sets secure default headers.
 
-- if page has set a "X-Frame-Options" header also set a "Cross-Origin-Opener-Policy" (Window timings)
+- Dont allow cross origin to access the window reference,  
+as this can leak the window length and navigation timings.
+- Make iframe embeds opt in.
