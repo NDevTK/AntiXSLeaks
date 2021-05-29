@@ -1,9 +1,15 @@
-chrome.webRequest.onHeadersReceived.addListener(function(details) {
-  for (let i = 0; i < details.responseHeaders.length; i += 1) {
-    if (details.responseHeaders[i].name.toLowerCase() === "x-frame-options") {
-		details.responseHeaders.push({name: "Cross-Origin-Opener-Policy", value: "same-origin"});
-	        break
+"use strict";
+const headers = [
+{name: "cross-origin-opener-policy", value: "same-origin"},
+{name: "strict-transport-security", value: "max-age=31536000"},
+{name: "x-content-type-options", value: "nosniff"},
+{name: "x-frame-options", value: "SAMEORIGIN"}
+];
+
+chrome.webRequest.onHeadersReceived.addListener(details => {
+    let keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
+    for (const header of headers) {
+    if (!keys.has(header.name)) details.responseHeaders.push(header);
     }
-  }
-return {responseHeaders: details.responseHeaders};
-}, {urls: ["<all_urls>"]}, ["blocking", "responseHeaders"]);
+    return {responseHeaders: details.responseHeaders};
+}, {urls: ['<all_urls>']}, ['blocking', 'responseHeaders', 'extraHeaders']);
