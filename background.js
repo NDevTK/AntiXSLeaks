@@ -8,10 +8,6 @@ const headers = [
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
-    // Add CORS policy with a lot of exceptions.
-    if (!keys.has("timing-allow-origin") && !keys.has("access-control-allow-origin") && !keys.has("cross-origin-resource-policy")) {
-    details.responseHeaders.push({name: "cross-origin-resource-policy", value: "same-origin"});
-    }
     for (const header of headers) {
     if (!keys.has(header.name)) details.responseHeaders.push(header);
     }
