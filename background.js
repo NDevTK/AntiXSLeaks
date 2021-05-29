@@ -3,8 +3,7 @@ const headers = [
 {name: "cross-origin-opener-policy", value: "same-origin"},
 {name: "strict-transport-security", value: "max-age=31536000"},
 {name: "x-content-type-options", value: "nosniff"},
-{name: "x-frame-options", value: "SAMEORIGIN"},
-{name: "vary", value: "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site, Sec-Fetch-User"}
+{name: "x-frame-options", value: "SAMEORIGIN"}
 ];
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
