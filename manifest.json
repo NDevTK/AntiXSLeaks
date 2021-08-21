@@ -5,6 +5,7 @@
   "permissions": [
     "webRequestBlocking",
     "webRequest",
+    "webNavigation",
     "<all_urls>"
   ],
   "background": {
