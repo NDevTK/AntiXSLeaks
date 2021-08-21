@@ -18,9 +18,10 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 }, {urls: ['<all_urls>']}, ['blocking', 'responseHeaders', 'extraHeaders']);
 
 // Block acesss to protected origins when request is from a diffrent origin.
-chrome.webRequest.onBeforeRequest.addListener(details => {
-    let requestOrigin = new URL(details.url).origin;
-    if (details.initiator !== undefined && protectedOrigins.has(requestOrigin) && requestOrigin !== details.initiator) {
-        return {cancel: true};
+chrome.webRequest.onBeforeSendHeaders.addListener(details => {
+    for (const header of details.requestHeaders) {
+    if (header.name === "Sec-Fetch-Site") {
+    let crossSite = (header.value === "cross-site");
+    return {cancel: crossSite}
     }
-}, {urls: ['<all_urls>']}, ['blocking']);
+}, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
