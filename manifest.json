@@ -9,13 +9,6 @@
   ],
   "background": {
     "scripts":["background.js"]
-  },
-  "content_scripts": [
-  {
-    "run_at": "document_start",
-    "all_frames": true,
-    "matches": ["<all_urls>"],
-    "js": ["contentScript.js"]
   }
 ],
   "manifest_version": 2
