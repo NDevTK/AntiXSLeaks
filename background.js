@@ -23,8 +23,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     if (protectedOrigins.has(new URL(details.url).origin)) {
         for (const header of details.requestHeaders) {
             if (header.name === "Sec-Fetch-Site") {
-                if (['none', 'same-origin'].includes(header.value) return {cancel: true};
-                return;
+                if (header.value === 'none' || header.value === 'same-origin') return;
+                return {cancel: true};
             }
         }
     }
