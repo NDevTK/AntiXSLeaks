@@ -1,6 +1,6 @@
 # AntiXSLeaks
 A extension to prevent XS-Leaks,  
-Sets secure default headers.
+Sets secure default headers and more! 
 
 - Dont allow cross origin to access the window reference,  
 as this can leak the window length and navigation timings.
