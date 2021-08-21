@@ -1,9 +1,10 @@
 "use strict";
+
 const headers = [
-{name: "cross-origin-opener-policy", value: "same-origin"},
-{name: "strict-transport-security", value: "max-age=31536000"},
-{name: "x-content-type-options", value: "nosniff"},
-{name: "x-frame-options", value: "SAMEORIGIN"}
+    {name: "cross-origin-opener-policy", value: "same-origin"},
+    {name: "strict-transport-security", value: "max-age=31536000"},
+    {name: "x-content-type-options", value: "nosniff"},
+    {name: "x-frame-options", value: "SAMEORIGIN"}
 ];
 
 // Origins require direct URL access by user.
@@ -22,7 +23,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     if (protectedOrigins.has(new URL(details.url).origin)) {
         for (const header of details.requestHeaders) {
             if (header.name === "Sec-Fetch-Site") {
-                if (header.value === "cross-site") return {cancel: true}
+                if (header.value === "cross-site") return {cancel: true};
                 return;
             }
         }
