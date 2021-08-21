@@ -18,7 +18,8 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 
 // Block acesss to protected origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeRequest.addListener(details => {
-    if (details.initiator !== null && protected.has(details.initiator) && new URL(details.url).origin !== details.initiator) {
+    let requestOrigin = new URL(details.url).origin;
+    if (details.initiator !== null && protected.has(requestOrigin) && requestOrigin !== details.initiator) {
         return {cancel: true};
     }
 }, {urls: ['<all_urls>']}, ['blocking']);
