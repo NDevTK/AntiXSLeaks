@@ -6,6 +6,7 @@ const headers = [
 {name: "x-frame-options", value: "SAMEORIGIN"}
 ];
 
+// Origins require direct URL access by user.
 const protectedOrigins = new Set(["https://example.com", "https://mail.google.com", "https://mail.protonmail.com", "https://outlook.live.com"]);
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
