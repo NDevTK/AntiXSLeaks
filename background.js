@@ -6,7 +6,7 @@ const headers = [
 {name: "x-frame-options", value: "SAMEORIGIN"}
 ];
 
-const protected = new Set(["https://mail.google.com", "https://mail.protonmail.com", "https://outlook.live.com"]);
+const protectedOrigins = new Set(["https://example.com", "https://mail.google.com", "https://mail.protonmail.com", "https://outlook.live.com"]);
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
@@ -19,7 +19,7 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 // Block acesss to protected origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeRequest.addListener(details => {
     let requestOrigin = new URL(details.url).origin;
-    if (details.initiator !== null && protected.has(requestOrigin) && requestOrigin !== details.initiator) {
+    if (details.initiator !== null && protectedOrigins.has(requestOrigin) && requestOrigin !== details.initiator) {
         return {cancel: true};
     }
 }, {urls: ['<all_urls>']}, ['blocking']);
