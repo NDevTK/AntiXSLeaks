@@ -15,9 +15,11 @@ const allowXFO = new Set(["account-api.protonmail.com]);
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
     let keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
+
     if (allowXFO.has(origin) && !keys.has('x-frame-options')) {
          details.responseHeaders.push({name: "x-frame-options", value: "ALLOWALL"});
     }
+
     for (const header of headers) {
         if (!keys.has(header.name)) details.responseHeaders.push(header);
     }
