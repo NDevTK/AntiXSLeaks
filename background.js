@@ -8,7 +8,7 @@ const headers = [
 ];
 
 // Origins require direct URL access by user.
-const protectedOrigins = new Set(["https://example.com", "https://mail.google.com", "https://mail.protonmail.com", "https://outlook.live.com"]);
+const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://outlook.live.com"]);
 
 const allowXFO = new Set(["account-api.protonmail.com"]);
 
