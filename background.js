@@ -8,27 +8,32 @@ const headers = [
     {name: "vary", value: "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site, Sec-Fetch-User"}
 ];
 
-// Origins require direct URL access by user.
+// Origins that require direct URL access by user.
 const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://outlook.live.com"]);
 
+// Origins that require being embeded in a iframe.
 const allowXFO = new Set(["account-api.protonmail.com"]);
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
     let keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
-
+    
+    // Add ALLOWALL to resources that need it.
     if (allowXFO.has(origin) && !keys.has('x-frame-options')) {
          details.responseHeaders.push({name: "x-frame-options", value: "ALLOWALL"});
     }
-
+    
+    // Apply defaults.
     for (const header of headers) {
         if (!keys.has(header.name)) details.responseHeaders.push(header);
     }
+    
     return {responseHeaders: details.responseHeaders};
 }, {urls: ['<all_urls>']}, ['blocking', 'responseHeaders', 'extraHeaders']);
 
 // Block acesss to protected origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
+    // Since this may inconvenience the user only do this for "important" origins.
     if (protectedOrigins.has(new URL(details.url).origin)) {
         for (const header of details.requestHeaders) {
             if (header.name === "Sec-Fetch-Site") {
