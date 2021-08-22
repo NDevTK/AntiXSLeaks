@@ -1,6 +1,6 @@
 # AntiXSLeaks
 A extension to prevent XS-Leaks,  
-Sets secure default headers and more! 
+Sets secure default headers and more! (https://w3c.github.io/webappsec-post-spectre-webdev/)
 
 - Dont allow cross origin to access the window reference,  
 as this can leak the window length and navigation timings.
