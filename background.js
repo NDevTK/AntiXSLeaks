@@ -10,7 +10,7 @@ const headers = [
 // Origins require direct URL access by user.
 const protectedOrigins = new Set(["https://example.com", "https://mail.google.com", "https://mail.protonmail.com", "https://outlook.live.com"]);
 
-const allowXFO = new Set(["account-api.protonmail.com]);
+const allowXFO = new Set(["account-api.protonmail.com"]);
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
