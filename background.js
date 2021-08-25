@@ -9,10 +9,10 @@ const headers = [
 ];
 
 // Origins that require direct URL access by user.
-const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://outlook.live.com"]);
+const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://payments.google.com", "https://myactivity.google.com", "https://pay.google.com", "https://adssettings.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://account.protonmail.com", "https://outlook.live.com"]);
 
 // Origins that get embeded in a cross-origin iframe.
-const allowXFO = new Set(["account-api.protonmail.com"]);
+const allowXFO = new Set(["https://account-api.protonmail.com"]);
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
