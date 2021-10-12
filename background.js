@@ -34,7 +34,8 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 // Block acesss to protected origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     // Since this may inconvenience the user only do this for "important" origins.
-    if (protectedOrigins.has(new URL(details.url).origin)) {
+    const url = new URL(details.url);
+    if (url.protocol === "chrome-extension:" || protectedOrigins.has(url.origin)) {
         for (const header of details.requestHeaders) {
             if (header.name === "Sec-Fetch-Site") {
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Site
@@ -45,8 +46,3 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         }
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
-
-
-chrome.webNavigation.onBeforeNavigate(details => {
-    console.log(details);
-});
