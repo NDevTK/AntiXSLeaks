@@ -14,6 +14,8 @@ const protectedOrigins = new Set(["https://example.com", "https://myaccount.goog
 // Origins that get embeded in a cross-origin iframe.
 const allowXFO = new Set(["https://account-api.protonmail.com"]);
 
+const whitelist = new Set([]);
+
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
     let keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
@@ -36,6 +38,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     // Since this may inconvenience the user only do this for "important" origins.
     const url = new URL(details.url);
     if (url.protocol === "chrome-extension:" || protectedOrigins.has(url.origin)) {
+        if (whitelist.has(url.origin)) return
         for (const header of details.requestHeaders) {
             if (header.name === "Sec-Fetch-Site") {
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Site
