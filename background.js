@@ -45,3 +45,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         }
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
+
+
+chrome.webNavigation.onBeforeNavigate(details => {
+    console.log(details);
+});
