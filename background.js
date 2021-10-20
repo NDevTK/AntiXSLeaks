@@ -2,6 +2,7 @@
 
 const headers = [
     {name: "cross-origin-opener-policy", value: "same-origin"},
+    {name: "cross-origin-embedder-policy", value: "credentialless"},
     {name: "strict-transport-security", value: "max-age=31536000"},
     {name: "x-content-type-options", value: "nosniff"},
     {name: "x-frame-options", value: "SAMEORIGIN"},
