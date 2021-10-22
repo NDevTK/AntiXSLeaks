@@ -8,7 +8,7 @@ as this can leak the window length and navigation timings.
 Prevents click jacking.
 - Block cross origin Initiator if its a protected origin (User must directly vist the origin),  
 Stops XS-Search attacks and URL based refected XSS.
-- Block hash navagations
+- Block hash navigations
 
 ## Known issues
 If a protected origin redirects to a URL based XSS on the same-origin it will be allowed.
