@@ -8,3 +8,4 @@ as this can leak the window length and navigation timings.
 Prevents click jacking.
 - Block cross origin Initiator if its a protected origin (User must directly vist the origin),  
 Stops XS-Search attacks and URL based refected XSS.
+- Blocks hash navagations
