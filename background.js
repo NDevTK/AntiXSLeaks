@@ -10,7 +10,7 @@ const headers = [
     {name: "document-policy", value: "force-load-at-top"}
 ];
 
-// Origins that require direct URL access by user.
+// Origins that require direct URL access by user or the same-origin.
 const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://payments.google.com", "https://myactivity.google.com", "https://pay.google.com", "https://adssettings.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://account.protonmail.com", "https://outlook.live.com"]);
 
 // Origins that get embeded in a cross-origin iframe.
