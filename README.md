@@ -9,7 +9,9 @@ Prevents click jacking.
 - Block cross origin Initiator if its a protected origin (User must directly vist the origin),  
 Stops XS-Search attacks and URL based refected XSS.
 - Block hash navigations
-- Force SameSite cookies
 
 ## Known issues
 If a protected origin redirects to a URL based XSS on the same-origin it will be allowed.
+
+## Improvments
+Add SameSite cookie support.
