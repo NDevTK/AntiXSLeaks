@@ -52,17 +52,12 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
 
-chrome.cookies.onChanged.addListener(details => {
-    let cookie = details.cookie;
-    if (!cookie.secure) return
-    delete cookie.hostOnly;
-    delete cookie.session;
-    cookie.url = "https://"+cookie.domain.substr(1);
-    let current = JSON.stringify(cookie);
-    if (protectedOrigins.has("https://" + cookie.domain.substr(1))) {
-        cookie.sameSite = "strict";
-    } else if (cookie.sameSite === "unspecified") {
-        cookie.sameSite = "lax";
-    } 
-    if (JSON.stringify(cookie) !== current) chrome.cookies.set(cookie);
-});
+function changeCookies(keys, responseHeaders) {
+    if (keys.has("cookie")) {
+        for (let header of responseHeaders) {
+            if (header.name.toLowerCase() === "cookie") {
+                break;
+            }
+        }
+    }
+}
