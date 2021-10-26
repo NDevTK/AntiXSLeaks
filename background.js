@@ -32,6 +32,8 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
         if (!keys.has(header.name)) details.responseHeaders.push(header);
     }
     
+    //changeCookies(keys, details.responseHeaders);
+    
     return {responseHeaders: details.responseHeaders};
 }, {urls: ['<all_urls>']}, ['blocking', 'responseHeaders', 'extraHeaders']);
 
