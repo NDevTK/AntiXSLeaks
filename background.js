@@ -60,9 +60,9 @@ chrome.cookies.onChanged.addListener(details => {
     cookie.url = "https://"+cookie.domain.substr(1);
     let current = JSON.stringify(cookie);
     if (protectedOrigins.has("https://" + cookie.domain.substr(1))) {
-        cookie.sameSite = "Strict";
+        cookie.sameSite = "strict";
     } else if (cookie.sameSite === "unspecified") {
-        cookie.sameSite = "Lax";
+        cookie.sameSite = "lax";
     } 
     if (JSON.stringify(cookie) !== current) chrome.cookies.set(cookie);
 });
