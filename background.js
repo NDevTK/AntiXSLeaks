@@ -51,3 +51,15 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         }
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
+
+
+chrome.cookies.onChanged.addListener(details => {
+    let cookie = details.cookie;
+    let current = JSON.stringify(cookie);
+    if (protectedOrigins.has("https://" + cookie.domain)) {
+        cookie.sameSite = "Strict";
+    } else if (cookie.sameSite === "unspecified") {
+        cookie.sameSite = "Lax";
+    } 
+    if (JSON.stringify(cookie) !== current) chrome.cookies.set(cookie);
+});
