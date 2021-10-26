@@ -13,5 +13,5 @@ Stops XS-Search attacks and URL based refected XSS.
 ## Known issues
 If a protected origin redirects to a URL based XSS on the same-origin it will be allowed.
 
-## Improvments
+## Improvements
 Add SameSite cookie support.
