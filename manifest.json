@@ -5,6 +5,7 @@
   "permissions": [
     "webRequestBlocking",
     "webRequest",
+    "cookies",
     "<all_urls>"
   ],
   "background": {
