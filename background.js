@@ -32,8 +32,6 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
         if (!keys.has(header.name)) details.responseHeaders.push(header);
     }
     
-    // changeCookies(keys, details.responseHeaders);
-    
     return {responseHeaders: details.responseHeaders};
 }, {urls: ['<all_urls>']}, ['blocking', 'responseHeaders', 'extraHeaders']);
 
@@ -54,12 +52,17 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
 
-function changeCookies(keys, responseHeaders) {
-    if (keys.has("cookie")) {
-        for (let header of responseHeaders) {
-            if (header.name.toLowerCase() === "cookie") {
-                break;
-            }
-        }
-    }
-}
+chrome.cookies.onChanged.addListener(details => {
+    let cookie = details.cookie;
+    if (!cookie.secure) return
+    delete cookie.hostOnly;
+    delete cookie.session;
+    let url = "https://"+cookie.domain.substr(1);
+    let current = JSON.stringify(cookie);
+    if (protectedOrigins.has("https://" + cookie.domain.substr(1))) {
+        cookie.sameSite = "Strict";
+    } else if (cookie.sameSite === "unspecified") {
+        cookie.sameSite = "Lax";
+    } 
+    if (JSON.stringify(cookie) !== current) chrome.cookies.set(cookie);
+});
