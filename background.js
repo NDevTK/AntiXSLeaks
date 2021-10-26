@@ -57,7 +57,7 @@ chrome.cookies.onChanged.addListener(details => {
     if (!cookie.secure) return
     delete cookie.hostOnly;
     delete cookie.session;
-    let url = "https://"+cookie.domain.substr(1);
+    cookie.url = "https://"+cookie.domain.substr(1);
     let current = JSON.stringify(cookie);
     if (protectedOrigins.has("https://" + cookie.domain.substr(1))) {
         cookie.sameSite = "Strict";
