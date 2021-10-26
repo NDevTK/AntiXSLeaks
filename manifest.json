@@ -5,6 +5,7 @@
   "permissions": [
     "webRequestBlocking",
     "webRequest",
+    "history",
     "<all_urls>"
   ],
   "background": {
