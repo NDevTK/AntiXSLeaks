@@ -44,7 +44,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     if (url.protocol === "chrome-extension:" || protectedOrigins.has(url.origin)) {
         if (whitelist.has(url.origin)) return
         for (const header of details.requestHeaders) {
-            if (header.name === "Sec-Fetch-Site") {
+            if (header.name.toLowerCase() === "sec-fetch-site") {
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Site
                 // User-originated operation or the initiator is same-origin can also use same-site.
                 if (header.value === 'none' || header.value === 'same-origin') return;
