@@ -14,7 +14,8 @@ const headers = [
 const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://payments.google.com", "https://myactivity.google.com", "https://pay.google.com", "https://adssettings.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://account.protonmail.com", "https://outlook.live.com"]);
 
 const exceptions = new Map()
-.set("https://account-api.protonmail.com", ['x-frame-options']);
+.set("https://account-api.protonmail.com", ['x-frame-options'])
+.set("https://en.wikipedia.org", ['document-policy']);
 
 const extensionEmbeding = new Set()
 .add("");
