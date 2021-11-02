@@ -13,23 +13,16 @@ const headers = [
 // Origins that require direct URL access by user or the same-origin.
 const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://payments.google.com", "https://myactivity.google.com", "https://pay.google.com", "https://adssettings.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://account.protonmail.com", "https://outlook.live.com"]);
 
-// Origins that get embeded in a cross-origin iframe.
-const allowXFO = new Set(["https://account-api.protonmail.com"]);
-
-const whitelist = new Set([]);
+const exceptions = new Map(["https://account-api.protonmail.com", ['x-frame-options']]);
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
+    let whitelist = exceptions.get(origin);
     let keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
-    
-    // Add ALLOWALL to resources that need it.
-    if (allowXFO.has(origin) && !keys.has('x-frame-options')) {
-         details.responseHeaders.push({name: "x-frame-options", value: "ALLOWALL"});
-    }
     
     // Apply defaults.
     for (const header of headers) {
-        if (!keys.has(header.name)) details.responseHeaders.push(header);
+        if (!keys.has(header.name) && !whitelist.includes(header.name)) details.responseHeaders.push(header);
     }
     
     //changeCookies(keys, details.responseHeaders);
@@ -40,16 +33,15 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 // Block acesss to protected origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     // Since this may inconvenience the user only do this for "important" origins.
-    const url = new URL(details.url);
-    if (url.protocol === "chrome-extension:" || protectedOrigins.has(url.origin)) {
-        if (whitelist.has(url.origin)) return
-        for (const header of details.requestHeaders) {
-            if (header.name.toLowerCase() === "sec-fetch-site") {
-                // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Site
-                // User-originated operation or the initiator is same-origin can also use same-site.
-                if (header.value === 'none' || header.value === 'same-origin') return;
-                return {cancel: true};
-            }
+    let origin = new URL(details.url).origin;
+    let whitelist = exceptions.get(origin);
+    
+    if (url.protocol === 'chrome-extension:' || protectedOrigins.has(url.origin)) {
+        let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
+        if (headers.has('sec-fetch-site')) {
+              let value = headers.get('sec-fetch-site');
+              if (value === 'none' && headers.get('sec-fetch-user') === '?1' || value === 'same-origin') return;
+              return {cancel: true};
         }
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
