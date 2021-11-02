@@ -15,6 +15,8 @@ const protectedOrigins = new Set(["https://example.com", "https://myaccount.goog
 
 const exceptions = new Map(["https://account-api.protonmail.com", ['x-frame-options']]);
 
+const extensionEmbeding = new Set([""]);
+
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
     let whitelist = exceptions.get(origin);
@@ -36,7 +38,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     let origin = new URL(details.url).origin;
     let whitelist = exceptions.get(origin);
     
-    if (url.protocol === 'chrome-extension:' || protectedOrigins.has(url.origin)) {
+    if (url.protocol === 'chrome-extension:' && !extensionEmbeding.has(origin) || protectedOrigins.has(origin)) {
         let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
         if (headers.has('sec-fetch-site')) {
               let value = headers.get('sec-fetch-site');
