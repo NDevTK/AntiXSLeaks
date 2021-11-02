@@ -21,7 +21,7 @@ const extensionEmbeding = new Set()
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
-    let whitelist = exceptions.get(origin);
+    let whitelist = exceptions.has(origin) ? exceptions.get(origin) : [];
     let keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
     
     // Apply defaults.
