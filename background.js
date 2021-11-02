@@ -36,7 +36,6 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     // Since this may inconvenience the user only do this for "important" origins.
     let origin = new URL(details.url).origin;
-    let whitelist = exceptions.get(origin);
     
     if (url.protocol === 'chrome-extension:' && !extensionEmbeding.has(origin) || protectedOrigins.has(origin)) {
         let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
