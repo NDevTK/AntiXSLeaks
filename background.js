@@ -13,9 +13,11 @@ const headers = [
 // Origins that require direct URL access by user or the same-origin.
 const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://payments.google.com", "https://myactivity.google.com", "https://pay.google.com", "https://adssettings.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://account.protonmail.com", "https://outlook.live.com"]);
 
-const exceptions = new Map(["https://account-api.protonmail.com", ['x-frame-options']]);
+const exceptions = new Map()
+.set("https://account-api.protonmail.com", ['x-frame-options']);
 
-const extensionEmbeding = new Set([""]);
+const extensionEmbeding = new Set()
+.add("");
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
