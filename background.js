@@ -29,17 +29,14 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
         if (!keys.has(header.name) && !whitelist.includes(header.name)) details.responseHeaders.push(header);
     }
     
-    //changeCookies(keys, details.responseHeaders);
-    
     return {responseHeaders: details.responseHeaders};
 }, {urls: ['<all_urls>']}, ['blocking', 'responseHeaders', 'extraHeaders']);
 
 // Block acesss to protected origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     // Since this may inconvenience the user only do this for "important" origins.
-    let origin = new URL(details.url).origin;
-    
-    if (url.protocol === 'chrome-extension:' && !extensionEmbeding.has(origin) || protectedOrigins.has(origin)) {
+    let url = new URL(details.url); 
+    if (url.protocol === 'chrome-extension:' && !extensionEmbeding.has(url.origin) || protectedOrigins.has(url.origin)) {
         let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
         if (headers.has('sec-fetch-site')) {
               let value = headers.get('sec-fetch-site');
@@ -48,13 +45,3 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         }
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
-
-function changeCookies(keys, responseHeaders) {
-    if (keys.has("cookie")) {
-        for (let header of responseHeaders) {
-            if (header.name.toLowerCase() === "cookie") {
-                break;
-            }
-        }
-    }
-}
