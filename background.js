@@ -43,7 +43,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         if (headers.has('sec-fetch-site')) {
               let value = headers.get('sec-fetch-site');
               if (value === 'none' && headers.get('sec-fetch-user') === '?1' || value === 'same-origin') return;
-              return {cancel: true};
         }
+        return {cancel: true};
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
