@@ -34,9 +34,8 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
     return {responseHeaders: details.responseHeaders};
 }, {urls: ['<all_urls>']}, ['blocking', 'responseHeaders', 'extraHeaders']);
 
-// Block acesss to protected origins when request is from a diffrent origin.
+// Block acesss to origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
-    // Since this may inconvenience the user only do this for "important" origins.
     let url = new URL(details.url);
     let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
     
@@ -47,6 +46,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         }
     }
     
+    // Since this may inconvenience the user only do this for "important" origins.
     if (protectedProtocols.has(url.protocol) && !protectedProtocolsBypass.has(url.origin) || protectedOrigins.has(url.origin)) {
         if (headers.has('sec-fetch-site')) {
               let value = headers.get('sec-fetch-site');
