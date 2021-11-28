@@ -39,7 +39,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     let url = new URL(details.url);
     let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
     
-    // Defend SameSite Lax cookies.
+    // Defend SameSite Lax cookies and malicious subdomains.
     if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate') {
         if (confirm(url.origin) !== true) {
             return {cancel: true};
