@@ -38,6 +38,7 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     // Since this may inconvenience the user only do this for "important" origins.
     let url = new URL(details.url);
+    let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
     
     // Defend SameSite Lax cookies.
     if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate') {
@@ -47,7 +48,6 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     }
     
     if (protectedProtocols.has(url.protocol) && !protectedProtocolsBypass.has(url.origin) || protectedOrigins.has(url.origin)) {
-        let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
         if (headers.has('sec-fetch-site')) {
               let value = headers.get('sec-fetch-site');
               if (value === 'none' && headers.get('sec-fetch-user') === '?1' || value === 'same-origin') return;
