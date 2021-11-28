@@ -4,8 +4,7 @@ Sets secure default headers and more! (https://w3c.github.io/webappsec-post-spec
 
 - Dont allow cross origin to access the window reference,  
 as this can leak the window length and navigation timings.
-- Make iframe embeds opt in,  
-Prevents click jacking.
+- Make iframe embeds opt in (Prevents click jacking).
 - Block cross origin Initiator if its a protected origin (User must directly vist the origin),  
 Stops XS-Search attacks and URL based refected XSS.
 - Block hash navigations
