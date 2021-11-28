@@ -5,7 +5,6 @@
   "permissions": [
     "webRequestBlocking",
     "webRequest",
-    "history",
     "<all_urls>"
   ],
   "cross_origin_embedder_policy": {
