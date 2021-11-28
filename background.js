@@ -38,6 +38,14 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     // Since this may inconvenience the user only do this for "important" origins.
     let url = new URL(details.url);
+    
+    // Defend SameSite Lax cookies.
+    if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate') {
+        if (confirm(url.origin) !== true) {
+            return {cancel: true};
+        }
+    }
+    
     if (protectedProtocols.has(url.protocol) && !protectedProtocolsBypass.has(url.origin) || protectedOrigins.has(url.origin)) {
         let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
         if (headers.has('sec-fetch-site')) {
