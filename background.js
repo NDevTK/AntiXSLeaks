@@ -48,10 +48,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     
     // Since this may inconvenience the user only do this for "important" origins.
     if (protectedProtocols.has(url.protocol) && !protectedProtocolsBypass.has(url.origin) || protectedOrigins.has(url.origin)) {
-        if (headers.has('sec-fetch-site')) {
-              let value = headers.get('sec-fetch-site');
-              if (value === 'none' && headers.get('sec-fetch-user') === '?1' || value === 'same-origin') return;
-        }
+        let value = headers.get('sec-fetch-site');
+        if (value === 'none' && headers.get('sec-fetch-user') === '?1' || value === 'same-origin') return;
         return {cancel: true};
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
