@@ -78,10 +78,9 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     }
     
     // Defend SameSite Lax cookies and malicious subdomains.
-    if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate') {
-        if (confirm(url.origin) !== true) {
-            return {cancel: true};
-        }
+    if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate' && headers.get('sec-fetch-dest') === 'document') {
+        if (headers.get('purpose') === 'prefetch') return {cancel: true};
+        if (confirm(url.origin) !== true) return {cancel: true};
     }
     
     // Since this may inconvenience the user only do this for "important" origins.
