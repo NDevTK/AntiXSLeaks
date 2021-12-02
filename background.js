@@ -26,7 +26,7 @@ function isTrustworthy(url) {
     if (url.protocol === 'null') return 'Not Trustworthy';
     
     // Assert: origin is a tuple origin.
-    if (url.protocol === undefined || url.host === undefined || url.port === undefined)  return 'Potentially Trustworthy';
+    if (url.protocol === undefined || url.host === undefined || url.port === undefined)  return 'Not Trustworthy';
     
     // If origin’s scheme is either "https" or "wss", return "Potentially Trustworthy".
     if (url.protocol === 'https:' || url.protocol === 'wss:') return 'Potentially Trustworthy';
