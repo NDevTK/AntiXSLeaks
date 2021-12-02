@@ -18,10 +18,16 @@ const exceptions = new Map()
 .set("https://en.wikipedia.org", ['document-policy']);
 
 function isTrustworthy(url) {
-    // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy
-    
     let url = new URL(url);
     
+    // https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
+    // If url is "about:blank" or "about:srcdoc", return "Potentially Trustworthy".
+    if (url.href === 'about:blank' || url.href === 'about:srcdoc') return 'Potentially Trustworthy';
+    
+    // If url’s scheme is "data", return "Potentially Trustworthy".
+    if (url.protocol === 'data:') return 'Potentially Trustworthy';
+    
+    // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy
     // If origin is an opaque origin, return "Not Trustworthy".
     if (url.protocol === 'null') return 'Not Trustworthy';
     
@@ -35,6 +41,7 @@ function isTrustworthy(url) {
     if (url.host === '127.0.0.1') return 'Potentially Trustworthy';
     
     // If the user agent conforms to the name resolution rules in [let-localhost-be-localhost] and one of the following is true:
+    
     if (url.host === 'localhost' || url.host === 'localhost.') return 'Potentially Trustworthy';
     if (url.host.endsWith('.localhost') || url.host.endsWith('.localhost.')) return 'Potentially Trustworthy';
     
@@ -66,7 +73,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
     
     // Cant trust the origin for insecure protocols
-    if (isTrustworthy(url.origin) === 'Not Trustworthy') {
+    if (isTrustworthy(url) === 'Not Trustworthy') {
         return {cancel: !confirm('[Not Trustworthy] '+ url.origin)};
     }
     
