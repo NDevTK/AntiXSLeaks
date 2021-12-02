@@ -18,38 +18,38 @@ const exceptions = new Map()
 .set("https://en.wikipedia.org", ['document-policy']);
 
 function isTrustworthy(url) {
-    let url = new URL(url);
+    let u = new URL(url);
     
     // https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
     // If url is "about:blank" or "about:srcdoc", return "Potentially Trustworthy".
-    if (url.href === 'about:blank' || url.href === 'about:srcdoc') return 'Potentially Trustworthy';
+    if (u.href === 'about:blank' || u.href === 'about:srcdoc') return 'Potentially Trustworthy';
     
     // If url’s scheme is "data", return "Potentially Trustworthy".
-    if (url.protocol === 'data:') return 'Potentially Trustworthy';
+    if (u.protocol === 'data:') return 'Potentially Trustworthy';
     
     // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy
     // If origin is an opaque origin, return "Not Trustworthy".
-    if (url.protocol === 'null') return 'Not Trustworthy';
+    if (u.protocol === 'null') return 'Not Trustworthy';
     
     // Assert: origin is a tuple origin.
-    if (url.protocol === undefined || url.host === undefined || url.port === undefined)  return 'Not Trustworthy';
+    if (u.protocol === undefined || u.host === undefined || u.port === undefined)  return 'Not Trustworthy';
     
     // If origin’s scheme is either "https" or "wss", return "Potentially Trustworthy".
-    if (url.protocol === 'https:' || url.protocol === 'wss:') return 'Potentially Trustworthy';
+    if (u.protocol === 'https:' || u.protocol === 'wss:') return 'Potentially Trustworthy';
     
     // If origin’s host matches one of the CIDR notations 127.0.0.0/8 or ::1/128 [RFC4632], return "Potentially Trustworthy".
-    if (url.host === '127.0.0.1') return 'Potentially Trustworthy';
+    if (u.host === '127.0.0.1') return 'Potentially Trustworthy';
     
     // If the user agent conforms to the name resolution rules in [let-localhost-be-localhost] and one of the following is true:
     
-    if (url.host === 'localhost' || url.host === 'localhost.') return 'Potentially Trustworthy';
-    if (url.host.endsWith('.localhost') || url.host.endsWith('.localhost.')) return 'Potentially Trustworthy';
+    if (u.host === 'localhost' || u.host === 'localhost.') return 'Potentially Trustworthy';
+    if (u.host.endsWith('.localhost') || u.host.endsWith('.localhost.')) return 'Potentially Trustworthy';
     
     // If origin’s scheme is "file", return "Potentially Trustworthy".
-    if (url.protocol === 'file:') return 'Potentially Trustworthy';
+    if (u.protocol === 'file:') return 'Potentially Trustworthy';
     
     // If origin’s scheme component is one which the user agent considers to be authenticated, return "Potentially Trustworthy".
-    if (url.protocol === 'app:' || url.protocol === 'chrome-extension:') return 'Potentially Trustworthy';
+    if (u.protocol === 'app:' || u.protocol === 'chrome-extension:') return 'Potentially Trustworthy';
 
     return 'Not Trustworthy';
 }
