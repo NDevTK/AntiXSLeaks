@@ -17,6 +17,35 @@ const exceptions = new Map()
 .set("https://account-api.protonmail.com", ['x-frame-options'])
 .set("https://en.wikipedia.org", ['document-policy']);
 
+function isTrustworthy(url) {
+    // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy
+    
+    let url = new URL(url);
+    
+    // If origin is an opaque origin, return "Not Trustworthy".
+    if (url.protocol === 'null') return 'Not Trustworthy';
+    
+    // Assert: origin is a tuple origin.
+    if (url.protocol === undefined || url.host === undefined || url.port === undefined)  return 'Potentially Trustworthy';
+    
+    // If origin’s scheme is either "https" or "wss", return "Potentially Trustworthy".
+    if (url.protocol === 'https:' || url.protocol === 'wss:') return 'Potentially Trustworthy';
+    
+    // If origin’s host matches one of the CIDR notations 127.0.0.0/8 or ::1/128 [RFC4632], return "Potentially Trustworthy".
+    if (url.host === '127.0.0.1') return 'Potentially Trustworthy';
+    
+    // If the user agent conforms to the name resolution rules in [let-localhost-be-localhost] and one of the following is true:
+    if (url.host === 'localhost' || url.host === 'localhost.') return 'Potentially Trustworthy';
+    if (url.host.endsWith('.localhost') || url.host.endsWith('.localhost.')) return 'Potentially Trustworthy';
+    
+    // If origin’s scheme is "file", return "Potentially Trustworthy".
+    if (url.protocol === 'file:') return 'Potentially Trustworthy';
+    
+    // If origin’s scheme component is one which the user agent considers to be authenticated, return "Potentially Trustworthy".
+    if (url.protocol === 'app:' || url.protocol === 'chrome-extension:') return 'Potentially Trustworthy';
+
+    return 'Not Trustworthy';
+}
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
@@ -37,8 +66,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
     
     // Cant trust the origin for insecure protocols
-    if (headers.has('sec-fetch-site') === false) {
-        return {cancel: !confirm('[INSECURE] '+ url.origin)};
+    if (isTrustworthy(url.origin) === 'Not Trustworthy') {
+        return {cancel: !confirm('[Not Trustworthy] '+ url.origin)};
     }
     
     // Defend SameSite Lax cookies and malicious subdomains.
