@@ -13,6 +13,8 @@ const headers = [
 // Require direct URL access by user or the same-origin.
 const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://payments.google.com", "https://myactivity.google.com", "https://pay.google.com", "https://adssettings.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://account.protonmail.com", "https://outlook.live.com"]);
 
+const potentiallyTrustworthy = 
+
 const exceptions = new Map()
 .set("https://account-api.protonmail.com", ['x-frame-options'])
 .set("https://en.wikipedia.org", ['document-policy']);
@@ -37,7 +39,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
     
     // Cant trust the origin for insecure protocols
-    if (url.protocol === 'http:') {
+    if (headers.has('sec-fetch-site') === false) {
         return {cancel: !confirm('[INSECURE] '+ url.origin)};
     }
     
