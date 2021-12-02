@@ -12,7 +12,7 @@ const headers = [
 
 // Require direct URL access by user or the same-origin.
 const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://payments.google.com", "https://myactivity.google.com", "https://pay.google.com", "https://adssettings.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://account.protonmail.com", "https://outlook.live.com"]);
-const protectedProtocols = new Set(['chrome-extension:', 'http:']);
+const protectedProtocols = new Set(['chrome-extension:']);
 // Orgins that are exempt from protocol limit.
 const protectedProtocolsBypass = new Set([]);
 
@@ -37,7 +37,12 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 // Block acesss to origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     let url = new URL(details.url);
-    let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]));
+    let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
+    
+    // Cant trust the origin for insecure protocols
+    if (url.protocol === 'http:') {
+        return {cancel: !confirm('[INSECURE] '+ url.origin)};
+    }
     
     // Defend SameSite Lax cookies and malicious subdomains.
     if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate') {
