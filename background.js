@@ -41,8 +41,9 @@ function isTrustworthy(url) {
     if (u.host === '127.0.0.1') return 'Potentially Trustworthy';
     
     // If the user agent conforms to the name resolution rules in [let-localhost-be-localhost] and one of the following is true:
-    
+    // origin’s host is "localhost" or "localhost."
     if (u.host === 'localhost' || u.host === 'localhost.') return 'Potentially Trustworthy';
+    // origin’s host ends with ".localhost" or ".localhost."
     if (u.host.endsWith('.localhost') || u.host.endsWith('.localhost.')) return 'Potentially Trustworthy';
     
     // If origin’s scheme is "file", return "Potentially Trustworthy".
