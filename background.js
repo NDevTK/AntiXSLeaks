@@ -13,8 +13,6 @@ const headers = [
 // Require direct URL access by user or the same-origin.
 const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://payments.google.com", "https://myactivity.google.com", "https://pay.google.com", "https://adssettings.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://account.protonmail.com", "https://outlook.live.com"]);
 
-const potentiallyTrustworthy = 
-
 const exceptions = new Map()
 .set("https://account-api.protonmail.com", ['x-frame-options'])
 .set("https://en.wikipedia.org", ['document-policy']);
