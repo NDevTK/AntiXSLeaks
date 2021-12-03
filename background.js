@@ -75,10 +75,10 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
 
     // Cant trust the origin for insecure protocols.
     if (isTrustworthy(url) === 'Not Trustworthy') {
-        if (details.initiator === 'null' || details.initiator === url.origin) {
-            return {cancel: !confirm('[Not trustworthy target]' + url.origin)};
+        if (details.initiator === undefined || details.initiator === url.origin) {
+            return {cancel: !confirm('[Not trustworthy target] ' + url.origin)};
         } else {
-            return {cancel: !confirm('[Not trustworthy target and initiator]' + url.origin)};
+            return {cancel: !confirm('[Not trustworthy target and initiator] ' + url.origin)};
         }
     }
     
