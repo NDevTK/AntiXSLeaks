@@ -77,16 +77,19 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
 
     // Cant trust the origin for insecure protocols.
     if (isTrustworthy(url) === 'Not Trustworthy') {
+        if (details.initiator === url.origin && unsafeExceptions.has(url.origin)) return;
         if (details.initiator === undefined || details.initiator === url.origin) {
             // Insecure pages will probbaly acesss insecure resources.
-            if (unsafeExceptions.has(url.origin)) return;
             if (confirm('[Not trustworthy target] ' + url.origin)) {
                 unsafeExceptions.add(url.origin);
                 return;
             };
         } else {
             // Internal websites may use http:// so also warn about the initiator.
-            if (confirm('[Not trustworthy target and initiator] ' + url.origin)) return;
+            if (confirm('[Not trustworthy target and initiator] ' + url.origin)) {
+                unsafeExceptions.add(url.origin);
+                return;
+            };
         }
         return {cancel: true};
     }
