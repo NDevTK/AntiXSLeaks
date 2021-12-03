@@ -80,12 +80,14 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         if (details.initiator === undefined || details.initiator === url.origin) {
             // Insecure pages will probbaly acesss insecure resources.
             if (unsafeExceptions.has(details.initiator)) return;
-            if (confirm('[Not trustworthy target] ' + url.origin)) return;
+            if (confirm('[Not trustworthy target] ' + url.origin)) {
+                unsafeExceptions.add(url.origin);
+                return;
+            };
         } else {
             // Internal websites may use http:// so also warn about the initiator.
             if (confirm('[Not trustworthy target and initiator] ' + url.origin)) return;
         }
-        unsafeExceptions.add(url.origin);
         return {cancel: true};
     }
     
