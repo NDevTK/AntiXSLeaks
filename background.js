@@ -79,7 +79,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     if (isTrustworthy(url) === 'Not Trustworthy') {
         if (details.initiator === undefined || details.initiator === url.origin) {
             // Insecure pages will probbaly acesss insecure resources.
-            if (unsafeExceptions.has(details.initiator)) return;
+            if (unsafeExceptions.has(url.origin)) return;
             if (confirm('[Not trustworthy target] ' + url.origin)) {
                 unsafeExceptions.add(url.origin);
                 return;
