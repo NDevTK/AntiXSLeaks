@@ -13,6 +13,8 @@ const headers = [
 // Require direct URL access by user or the same-origin.
 const protectedOrigins = new Set(["https://example.com", "https://myaccount.google.com", "https://payments.google.com", "https://myactivity.google.com", "https://pay.google.com", "https://adssettings.google.com", "https://mail.google.com", "https://mail.protonmail.com", "https://account.protonmail.com", "https://outlook.live.com"]);
 
+var unsafeExceptions = new Set();
+
 const exceptions = new Map()
 .set("https://account-api.protonmail.com", ['x-frame-options'])
 .set("https://en.wikipedia.org", ['document-policy']);
@@ -76,11 +78,15 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     // Cant trust the origin for insecure protocols.
     if (isTrustworthy(url) === 'Not Trustworthy') {
         if (details.initiator === undefined || details.initiator === url.origin) {
-            return {cancel: !confirm('[Not trustworthy target] ' + url.origin)};
+            // Insecure pages will probbaly acesss insecure resources.
+            if (unsafeExceptions.has(details.initiator)) return;
+            if (confirm('[Not trustworthy target] ' + url.origin)) return;
         } else {
             // Internal websites may use http:// so also warn about the initiator.
-            return {cancel: !confirm('[Not trustworthy target and initiator] ' + url.origin)};
+            if (confirm('[Not trustworthy target and initiator] ' + url.origin)) return;
         }
+        unsafeExceptions.add(url.origin);
+        return {cancel: true};
     }
     
     // Defend SameSite Lax cookies and malicious subdomains.
