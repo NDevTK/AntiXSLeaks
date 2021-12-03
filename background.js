@@ -78,6 +78,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         if (details.initiator === undefined || details.initiator === url.origin) {
             return {cancel: !confirm('[Not trustworthy target] ' + url.origin)};
         } else {
+            // Internal websites may use http:// so also warn about the initiator.
             return {cancel: !confirm('[Not trustworthy target and initiator] ' + url.origin)};
         }
     }
