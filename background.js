@@ -74,8 +74,14 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
     
     // Cant trust the origin for insecure protocols.
-    if (isTrustworthy(url) === 'Not Trustworthy') {
-        return {cancel: !confirm('[Not Trustworthy] '+ url.origin)};
+    if (isTrustworthy(url) === 'Not Trustworthy' && confirm('[Not Trustworthy]' + url.origin) !== true) {
+        return {cancel: true};
+    }
+    
+    // If the request does not contain the header use details.initiator instead.
+    if (headers.has('sec-fetch-site') === false) {
+        if (details.initiator === 'null' || details.initiator === url.origin) return;
+        return {cancel: true};
     }
     
     // Defend SameSite Lax cookies and malicious subdomains.
@@ -86,13 +92,6 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     
     // Since this may inconvenience the user only do this for "important" origins.
     if (protectedOrigins.has(url.origin)) {
-        
-        // If the request does not contain the header use details.initiator instead.
-        if (headers.has('sec-fetch-site') === false) {
-            if (details.initiator === 'null' || details.initiator === url.origin) return;
-            return {cancel: true};
-        }
-        
         let site = headers.get('sec-fetch-site');
         if (site === 'none' && headers.get('sec-fetch-user') === '?1' || site === 'same-origin') return;
         return {cancel: true};
