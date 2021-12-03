@@ -9,6 +9,7 @@ as this can leak the window length and navigation timings.
 Stops XS-Search attacks and URL based refected XSS.
 - Block hash navigations
 - Confirm cross-site navigations (Prevents attacks with SameSite Lax cookies and malicious subdomains)
+- Attempts to prevent acesss to insecure resources (like internal)
 
 ## Known issues
 If a protected origin redirects to a URL based XSS on the same-origin it will be allowed.
