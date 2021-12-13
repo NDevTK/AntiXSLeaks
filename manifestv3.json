@@ -1,0 +1,23 @@
+{
+  "name": "AntiXSLeaks",
+  "version": "1.0",
+  "description": "Prevent XS Leaks",
+  "permissions": [
+    "webRequestBlocking",
+    "webRequest",
+    "<all_urls>"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "cross_origin_embedder_policy": {
+    "value": "require-corp"
+  },
+  "cross_origin_opener_policy": {
+    "value": "same-origin"
+  },
+  "background": {
+    "service_worker": ["background.js"]
+  },
+  "manifest_version": 3
+}
