@@ -1,4 +1,5 @@
 # AntiXSLeaks
+
 A extension to prevent XS-Leaks,  
 Sets secure default headers and more! (https://w3c.github.io/webappsec-post-spectre-webdev/)
 
@@ -13,3 +14,8 @@ Stops XS-Search attacks and URL based refected XSS.
 
 ## Known issues
 If a protected origin redirects to a URL based XSS on the same-origin it will be allowed.
+
+## Manifest v3
+This extension uses webRequestBlocking since blocking is based on the headers recived.  
+In order to do this the extension must be forced installed with manifestv3.json  
+https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/#when-use-blocking-webrequest
