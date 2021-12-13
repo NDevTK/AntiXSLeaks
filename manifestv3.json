@@ -4,8 +4,7 @@
   "description": "Prevent XS Leaks",
   "permissions": [
     "webRequestBlocking",
-    "webRequest",
-    "<all_urls>"
+    "webRequest"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -17,7 +16,7 @@
     "value": "same-origin"
   },
   "background": {
-    "service_worker": ["background.js"]
+    "service_worker": "background.js"
   },
   "manifest_version": 3
 }
