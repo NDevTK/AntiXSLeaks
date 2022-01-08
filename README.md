@@ -17,5 +17,5 @@ If a protected origin redirects to a URL based XSS on the same-origin it will be
 
 ## Manifest v3
 This extension uses webRequestBlocking since blocking is based on the headers received.  
-In order to do this the extension must be force installed with manifestv3.json  
+In order to do this the extension must be force installed with manifestv3.json when using Manifest v3  
 https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/#when-use-blocking-webrequest
