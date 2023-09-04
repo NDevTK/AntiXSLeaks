@@ -70,16 +70,20 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
     return {responseHeaders: details.responseHeaders};
 }, {urls: ['<all_urls>']}, (firefox) ? ['blocking', 'responseHeaders'] : ['blocking', 'responseHeaders', 'extraHeaders']);
 
+
+const createPopup = (url) => new Promise((resolve) => chrome.windows.create({type: 'popup', url: url}, resolve));
+const sendMessage = (id, message) => new Promise((resolve) => chrome.tabs.sendMessage(id, message, resolve));
+
 async function confirm(message) {
-    let popup = await chrome.windows.create({type: 'popup', url: "confirm.html"});
+    let popup = await createPopup('confirm.html');
     await new Promise(resolve => setTimeout(resolve, 100));
-    let result = await chrome.tabs.sendMessage(popup.tabs[0].id, message);
+    let result = await sendMessage(popup.tabs[0].id, message);
     chrome.windows.remove(popup.id);
     return result;
 }
 
 // Block acesss to origins when request is from a diffrent origin.
-chrome.webRequest.onBeforeSendHeaders.addListener(details => {
+chrome.webRequest.onBeforeSendHeaders.addListener(async details => {
     let url = new URL(details.url);
     let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
 
@@ -88,13 +92,15 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         if (details.initiator === url.origin && unsafeExceptions.has(url.origin)) return;
         if (details.initiator === undefined || details.initiator === url.origin) {
             // Insecure pages will probbaly acesss insecure resources.
-            if (await confirm('[Not trustworthy target] ' + url.origin)) {
+            let allow = await confirm('[Not trustworthy target] ' + url.origin);
+            if (allow) {
                 unsafeExceptions.add(url.origin);
                 return;
             };
         } else {
+            let allow = await confirm('[Not trustworthy target and initiator] ' + url.origin);
             // Internal websites may use http:// so also warn about the initiator.
-            if (await confirm('[Not trustworthy target and initiator] ' + url.origin)) {
+            if (allow) {
                 unsafeExceptions.add(url.origin);
                 return;
             };
@@ -117,6 +123,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     // Defend SameSite Lax cookies and malicious subdomains.
     if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate' && headers.get('sec-fetch-dest') === 'document') {
         if (headers.get('purpose') === 'prefetch') return {cancel: true};
-        if (await confirm(url.origin) !== true) return {cancel: true};
+        let allow = await confirm(url.origin);
+        if (allow !== true) return {cancel: true};
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
