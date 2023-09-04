@@ -5,3 +5,5 @@ async function confirm(message) {
   browser.windows.remove(popup.id);
   return result;
 }
+
+firefox = true;
