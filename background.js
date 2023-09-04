@@ -102,12 +102,6 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         return {cancel: true};
     }
     
-    // Defend SameSite Lax cookies and malicious subdomains.
-    if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate' && headers.get('sec-fetch-dest') === 'document') {
-        if (headers.get('purpose') === 'prefetch') return {cancel: true};
-        if (await confirm(url.origin) !== true) return {cancel: true};
-    }
-    
     // Since this may inconvenience the user only do this for "important" origins.
     if (protectedOrigins.has(url.origin)) {
         // If the request does not contain the header use details.initiator instead.
@@ -118,5 +112,11 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         let site = headers.get('sec-fetch-site');
         if (site === 'none' && headers.get('sec-fetch-user') === '?1' || site === 'same-origin') return;
         return {cancel: true};
+    }
+    
+    // Defend SameSite Lax cookies and malicious subdomains.
+    if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate' && headers.get('sec-fetch-dest') === 'document') {
+        if (headers.get('purpose') === 'prefetch') return {cancel: true};
+        if (await confirm(url.origin) !== true) return {cancel: true};
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
