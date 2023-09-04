@@ -20,5 +20,5 @@ This extension uses webRequestBlocking since blocking is based on the headers re
 In order to do this the extension must be force installed with manifestv3.json when using Manifest v3  
 https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/#when-use-blocking-webrequest
 
-## Firefox (Not working currently)
+## Firefox
 This extension should be installed with manifest-firefox.json
