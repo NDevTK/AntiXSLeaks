@@ -57,8 +57,6 @@ function isTrustworthy(url) {
     return 'Not Trustworthy';
 }
 
-const options = (firefox) ? ['blocking', 'responseHeaders'] : ['blocking', 'responseHeaders', 'extraHeaders'];
-
 chrome.webRequest.onHeadersReceived.addListener(details => {
     let origin = new URL(details.url).origin;
     let whitelist = exceptions.has(origin) ? exceptions.get(origin) : [];
@@ -70,7 +68,7 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
     }
     
     return {responseHeaders: details.responseHeaders};
-}, {urls: ['<all_urls>']}, options);
+}, {urls: ['<all_urls>']}, (firefox) ? ['blocking', 'responseHeaders'] : ['blocking', 'responseHeaders', 'extraHeaders']);
 
 // Block acesss to origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
