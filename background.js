@@ -82,29 +82,33 @@ async function confirm(message) {
     return result;
 }
 
+function checkTarget(url) {
+    if (details.initiator === url.origin && unsafeExceptions.has(url.origin)) return false;
+    if (details.initiator === undefined || details.initiator === url.origin) {
+        // Insecure pages will probbaly acesss insecure resources.
+        let allow = await confirm('[Not trustworthy target] ' + url.origin);
+        if (allow) {
+            unsafeExceptions.add(url.origin);
+            return false;
+        };
+    } else {
+        let allow = await confirm('[Not trustworthy target and initiator] ' + url.origin);
+        // Internal websites may use http:// so also warn about the initiator.
+        if (allow) {
+            unsafeExceptions.add(url.origin);
+            return false;
+        };
+    }
+    return true;
+}
+
 // Block acesss to origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeSendHeaders.addListener(async details => {
     let url = new URL(details.url);
     let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
 
     // Cant trust the origin for insecure protocols.
-    if (isTrustworthy(url) === 'Not Trustworthy') {
-        if (details.initiator === url.origin && unsafeExceptions.has(url.origin)) return;
-        if (details.initiator === undefined || details.initiator === url.origin) {
-            // Insecure pages will probbaly acesss insecure resources.
-            let allow = await confirm('[Not trustworthy target] ' + url.origin);
-            if (allow) {
-                unsafeExceptions.add(url.origin);
-                return;
-            };
-        } else {
-            let allow = await confirm('[Not trustworthy target and initiator] ' + url.origin);
-            // Internal websites may use http:// so also warn about the initiator.
-            if (allow) {
-                unsafeExceptions.add(url.origin);
-                return;
-            };
-        }
+    if (isTrustworthy(url) === 'Not Trustworthy' && checkTarget(url)) {
         return {cancel: true};
     }
     
