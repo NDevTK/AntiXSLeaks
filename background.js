@@ -31,7 +31,7 @@ function isTrustworthy(url) {
     
     // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy
     // If origin is an opaque origin, return "Not Trustworthy".
-    if (u.protocol === 'null') return 'Not Trustworthy';
+    if (u.origin === 'null') return 'Not Trustworthy';
     
     // Assert: origin is a tuple origin.
     if (u.protocol === undefined || u.host === undefined || u.port === undefined)  return 'Not Trustworthy';
