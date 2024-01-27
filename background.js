@@ -82,24 +82,46 @@ async function confirm(message) {
     return result;
 }
 
-function checkTarget(url) {
-    if (details.initiator === url.origin && unsafeExceptions.has(url.origin)) return false;
+function checkTarget(url, details) {
+    if (isTrustworthy(url) === 'Potentially Trustworthy') return;
+    if (details.initiator === url.origin && unsafeExceptions.has(url.origin)) return;
     if (details.initiator === undefined || details.initiator === url.origin) {
         // Insecure pages will probbaly acesss insecure resources.
         let allow = await confirm('[Not trustworthy target] ' + url.origin);
         if (allow) {
             unsafeExceptions.add(url.origin);
-            return false;
+            return;
         };
     } else {
         let allow = await confirm('[Not trustworthy target and initiator] ' + url.origin);
         // Internal websites may use http:// so also warn about the initiator.
         if (allow) {
             unsafeExceptions.add(url.origin);
-            return false;
+            return;
         };
     }
     return true;
+}
+
+function isProtected(url, details, headers) {
+    if (protectedOrigins.has(url.origin)) {
+        // If the request does not contain the header use details.initiator instead.
+        if (headers.has('sec-fetch-site') === false) {
+            if (details.initiator === 'null' || details.initiator === url.origin) return;
+        }
+        let site = headers.get('sec-fetch-site');
+        if (site === 'none' && headers.get('sec-fetch-user') === '?1' || site === 'same-origin') return;
+        return true;
+    }
+}
+
+function laxCheck(url, headers) {
+    if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate' && headers.get('sec-fetch-dest') === 'document') {
+        if (headers.get('purpose') === 'prefetch') return true;
+        let allow = await confirm(url.origin);
+        if (allow === true) return;
+        return true;
+    }
 }
 
 // Block acesss to origins when request is from a diffrent origin.
@@ -108,26 +130,17 @@ chrome.webRequest.onBeforeSendHeaders.addListener(async details => {
     let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
 
     // Cant trust the origin for insecure protocols.
-    if (isTrustworthy(url) === 'Not Trustworthy' && checkTarget(url)) {
+    if (checkTarget(url, details)) {
         return {cancel: true};
     }
     
     // Since this may inconvenience the user only do this for "important" origins.
-    if (protectedOrigins.has(url.origin)) {
-        // If the request does not contain the header use details.initiator instead.
-        if (headers.has('sec-fetch-site') === false) {
-            if (details.initiator === 'null' || details.initiator === url.origin) return;
-            return {cancel: true};
-        }
-        let site = headers.get('sec-fetch-site');
-        if (site === 'none' && headers.get('sec-fetch-user') === '?1' || site === 'same-origin') return;
+    if (isProtected(url, details, headers)) {
         return {cancel: true};
     }
-    
+
     // Defend SameSite Lax cookies and malicious subdomains.
-    if (headers.get('sec-fetch-site') === 'cross-site' && headers.get('sec-fetch-mode') === 'navigate' && headers.get('sec-fetch-dest') === 'document') {
-        if (headers.get('purpose') === 'prefetch') return {cancel: true};
-        let allow = await confirm(url.origin);
-        if (allow !== true) return {cancel: true};
+    if (laxCheck(url, headers)) {
+        return {cancel: true};
     }
 }, {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
