@@ -75,9 +75,9 @@ const createPopup = (url) => new Promise((resolve) => chrome.windows.create({typ
 const sendMessage = (id, message) => new Promise((resolve) => chrome.tabs.sendMessage(id, message, resolve));
 
 async function confirm(message) {
-    let popup = await createPopup('confirm.html');
+    const popup = await createPopup('confirm.html');
     await new Promise(resolve => setTimeout(resolve, 100));
-    let result = await sendMessage(popup.tabs[0].id, message);
+    const result = await sendMessage(popup.tabs[0].id, message);
     chrome.windows.remove(popup.id);
     return result;
 }
