@@ -58,9 +58,9 @@ function isTrustworthy(url) {
 }
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
-    let origin = new URL(details.url).origin;
-    let whitelist = exceptions.has(origin) ? exceptions.get(origin) : [];
-    let keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
+    const origin = new URL(details.url).origin;
+    const whitelist = exceptions.has(origin) ? exceptions.get(origin) : [];
+    const keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
     
     // Apply defaults.
     for (const header of headers) {
@@ -82,10 +82,10 @@ async function confirm(message) {
     return result;
 }
 
-function checkTarget(url, details) {
+function checkTarget(url, initiator) {
     if (isTrustworthy(url) === 'Potentially Trustworthy') return;
-    if (details.initiator === url.origin && unsafeExceptions.has(url.origin)) return;
-    if (details.initiator === undefined || details.initiator === url.origin) {
+    if (initiator === url.origin && unsafeExceptions.has(url.origin)) return;
+    if (initiator === undefined || initiator === url.origin) {
         // Insecure pages will probbaly acesss insecure resources.
         let allow = await confirm('[Not trustworthy target] ' + url.origin);
         if (allow) {
@@ -103,11 +103,11 @@ function checkTarget(url, details) {
     return true;
 }
 
-function isProtected(url, details, headers) {
+function isProtected(url, initiator, headers) {
     if (protectedOrigins.has(url.origin)) {
         // If the request does not contain the header use details.initiator instead.
         if (headers.has('sec-fetch-site') === false) {
-            if (details.initiator === 'null' || details.initiator === url.origin) return;
+            if (initiator === 'null' || initiator === url.origin) return;
         }
         let site = headers.get('sec-fetch-site');
         if (site === 'none' && headers.get('sec-fetch-user') === '?1' || site === 'same-origin') return;
@@ -126,16 +126,17 @@ function laxCheck(url, headers) {
 
 // Block acesss to origins when request is from a diffrent origin.
 chrome.webRequest.onBeforeSendHeaders.addListener(async details => {
-    let url = new URL(details.url);
-    let headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
-
+    const url = new URL(details.url);
+    const headers = new Map(details.requestHeaders.map(header => [header.name.toLowerCase(), header.value.toLowerCase()]))
+    const initiator = details.initiator;
+    
     // Cant trust the origin for insecure protocols.
-    if (checkTarget(url, details)) {
+    if (checkTarget(url, initiator)) {
         return {cancel: true};
     }
     
     // Since this may inconvenience the user only do this for "important" origins.
-    if (isProtected(url, details, headers)) {
+    if (isProtected(url, initiator, headers)) {
         return {cancel: true};
     }
 
