@@ -59,12 +59,12 @@ function isTrustworthy(url) {
 
 chrome.webRequest.onHeadersReceived.addListener(details => {
     const origin = new URL(details.url).origin;
-    const whitelist = exceptions.has(origin) ? exceptions.get(origin) : [];
+    const allowlist = exceptions.has(origin) ? exceptions.get(origin) : [];
     const keys = new Set(details.responseHeaders.map(header => header.name.toLowerCase()));
     
     // Apply defaults.
     for (const header of headers) {
-        if (!keys.has(header.name) && !whitelist.includes(header.name)) details.responseHeaders.push(header);
+        if (!keys.has(header.name) && !allowlist.includes(header.name)) details.responseHeaders.push(header);
     }
     
     return {responseHeaders: details.responseHeaders};
